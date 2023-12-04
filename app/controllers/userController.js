@@ -55,7 +55,7 @@ class userController{
     async logout(req, res, next) {
         res.clearCookie("uid");
         res.statusCode = 302;
-        res.redirect('/');
+        res.status(200);
         res.end();
     }
 }
