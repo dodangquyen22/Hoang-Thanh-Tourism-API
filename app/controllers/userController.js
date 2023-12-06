@@ -82,10 +82,31 @@ class userController{
         try {
             const ticket = await Ticket.find({ username: req.body.username });
             // console.log(ticket)
-            res.status(200).json(ticket.name)
+            res.status(200).json(ticket)
         } catch (error) {
             next(error);
         }
+    }
+    async changePass(req, res, next) {
+        const user = await User.findOne({ username: req.body.username });
+        const validPassword = await bcrypt.compare(req.body.password, user.password);
+        if(validPassword) {
+            const salt = await bcrypt.genSalt(10);
+            const newPass = req.body.newPass;
+            const hashedPassword = await bcrypt.hash(newPass, salt);
+            await User.findOneAndUpdate({ username: req.body.username }, {password:hashedPassword});
+            res.status(200).json({message:'Đổi mật khẩu thành công'})
+        }
+
+    }
+
+    async changeInfo(req, res, next) {
+        const user = await User.findOne({ username: req.body.username });
+        const emailEdit = req.body.emailEdit;
+        const phoneEdit = req.body.phoneEdit;
+        const update = {email: emailEdit,phone: phoneEdit};
+        await User.findOneAndUpdate({username: req.body.username}, update);
+        res.status(200).json({message:'Đổi mật khẩu thành công'})
     }
 }
 module.exports = new userController()

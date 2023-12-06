@@ -10,5 +10,7 @@ router.post('/logout', userController.logout);
 router.post('/viewInfo', userController.viewInfo);
 router.post('/ticket', userController.registerTicket);
 router.post('/viewTicket', userController.viewTicket);
+router.post('/changePass', userController.changePass);
+router.post('/changeInfo', userController.changeInfo);
 
 module.exports = router;
