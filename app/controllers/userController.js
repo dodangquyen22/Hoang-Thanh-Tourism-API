@@ -1,4 +1,5 @@
 const User = require('../modulers/user')
+const Ticket = require("../modulers/ticket")
 const bcrypt = require("bcrypt")
 
 class userController{
@@ -34,7 +35,7 @@ class userController{
             const user = await User.findOne({ username: req.body.username });
             if (!user) {
                 // res.redirect('/');
-                return;
+                return res.status(400).json({error: 'Thông tin đăng nhập không đúng'})
             }
     
             const validPassword = await bcrypt.compare(req.body.password, user.password);
@@ -43,10 +44,10 @@ class userController{
                 res.cookie("uid", user.id);
                 console.log(user.id)
                 // res.redirect('/');
-                res.json(user.username);
-                return;
+                return res.status(200).json(user.username);
             }
-            console.log("ssssss")
+            console.log("sss")
+            return res.status(400).json({error: 'Thông tin đăng nhập không đúng'})
             // res.redirect('/');
         } catch (error) {
             next(error);
@@ -57,6 +58,34 @@ class userController{
         res.statusCode = 302;
         res.status(200);
         res.end();
+    }
+    async viewInfo(req, res, next) {
+        try {
+            const user = await User.findOne({ username: req.body.username });
+            res.status(200).json(user)
+        } catch (error) {
+            next(error);
+        }
+    }
+    async registerTicket(req, res, next) {
+        try{
+            const {username ,name, phone, date, adult,child, fee} = req.body;
+            const ticket = new Ticket({username ,name, phone, date, adult,child, fee});
+            ticket.save();
+            res.status(200).json(ticket._id);
+        } catch (error){
+            next(error);
+        }
+        
+    }
+    async viewTicket(req, res, next) {
+        try {
+            const ticket = await Ticket.find({ username: req.body.username });
+            // console.log(ticket)
+            res.status(200).json(ticket.name)
+        } catch (error) {
+            next(error);
+        }
     }
 }
 module.exports = new userController()
