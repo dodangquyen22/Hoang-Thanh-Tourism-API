@@ -102,12 +102,22 @@ class userController{
     }
 
     async changeInfo(req, res, next) {
+        console.log(req.body)
         const user = await User.findOne({ username: req.body.username });
-        const emailEdit = req.body.emailEdit;
-        const phoneEdit = req.body.phoneEdit;
-        const update = {email: emailEdit,phone: phoneEdit};
-        await User.findOneAndUpdate({username: req.body.username}, update);
-        res.status(200).json({message:'Đổi mật khẩu thành công'})
+        if (!req.body.emailEdit) {
+            await User.findOneAndUpdate({username: req.body.username}, {phone: req.body.phoneEdit});
+        }
+        else if (!req.body.phoneEdit) {
+            await User.findOneAndUpdate({username: req.body.username}, {phone: req.body.emailEdit});
+        }
+        else {
+            const emailEdit = req.body.emailEdit;
+            const phoneEdit = req.body.phoneEdit;
+            const update = {email: emailEdit,phone: phoneEdit};
+            await User.findOneAndUpdate({username: req.body.username}, update);
+            res.status(200).json({message:'Đổi mật khẩu thành công'})
+        }
+        
     }
 }
 module.exports = new userController()
