@@ -89,14 +89,15 @@ class userController{
     }
     async changePass(req, res, next) {
         const user = await User.findOne({ username: req.body.username });
-        const validPassword = await bcrypt.compare(req.body.password, user.password);
+        const validPassword = await bcrypt.compare(req.body.oldPassword, user.password);
         if(validPassword) {
             const salt = await bcrypt.genSalt(10);
-            const newPass = req.body.newPass;
+            const newPass = req.body.newPassword;
             const hashedPassword = await bcrypt.hash(newPass, salt);
             await User.findOneAndUpdate({ username: req.body.username }, {password:hashedPassword});
-            res.status(200).json({message:'Đổi mật khẩu thành công'})
+            return res.status(200).json({message:'Đổi mật khẩu thành công'})
         }
+        return res.status(400).json({error: 'Mật khẩu cũ không đúng'})
 
     }
 
